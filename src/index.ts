@@ -3,6 +3,6 @@
  * @param message - The message to log.
  * @returns {void}
  */
-export function log(message: string) {
-    console.log(message)
+export function log(message: string): void {
+    console.log(message);
 }
