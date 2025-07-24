@@ -5,13 +5,14 @@ import { Node } from 'akore';
  */
 export enum NodeType {
     Call = 'call_node',
-    Literal = 'literal_node'
+    Literal = 'literal_node',
+    Program = 'program_node'
 }
 
 /**
  * A base node structure in the AST.
  */
-abstract class BaseNode<Type extends NodeType = NodeType, Value = unknown> extends Node<Type, Value> {
+export abstract class BaseNode<Type extends NodeType = NodeType, Value = unknown> extends Node<Type, Value> {
     /**
      * Creates a new node in the AST.
      * @param type - The type of the node.
@@ -82,5 +83,42 @@ export class CallNode extends BaseNode<NodeType.Call, CallNodeValue> {
         const callee = this.value.callee.serialize();
 
         return (this.value.zero ? `(0, ${callee})(${args})` : `${callee}(${args})`) + (this.semicolon ? ';' : '');
+    }
+}
+
+/**
+ * A program in the AST.
+ */
+export class ProgramNode extends BaseNode<NodeType.Program, BaseNode[]> {
+    /**
+     * Creates a program in the AST.
+     * @param nodes 
+     */
+    constructor(nodes: BaseNode[]) {
+        super(NodeType.Program, nodes);
+    }
+
+    /**
+     * Push nodes to the program.
+     * @param nodes - The nodes to push.
+     * @returns {void}
+     */
+    push(...nodes: BaseNode[]) {
+        this.nodes.push(...nodes);
+    }
+
+    /**
+     * The string representation of the program.
+     * @returns {string}
+     */
+    override serialize(): string {
+        return this.nodes.map((node) => node.serialize()).join('\n');
+    }
+
+    /**
+     * The nodes contained in the program.
+     */
+    get nodes(): BaseNode[] {
+        return this.value;
     }
 }

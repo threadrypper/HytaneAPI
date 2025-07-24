@@ -6,10 +6,9 @@ import type { Patterns } from 'akore';
  * @param brackets - Whether this instruction must have brackets.
  * @returns {Patterns} - The built patterns.
  */
-export function makePattern(name: string, brackets = false): Patterns {
-    if (name.startsWith('$')) name = name.slice(1).toLowerCase();
+export function makePattern(name: RegExp, brackets = false): Patterns {
     return {
-        foremost: new RegExp(`\\$${name}`),
+        foremost: name,
         opener: brackets ? /\[/ : undefined,
         closer: brackets ? /\]/ : undefined,
     }

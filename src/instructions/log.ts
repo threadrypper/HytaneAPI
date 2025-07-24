@@ -5,7 +5,7 @@ import { makePattern } from '@utils/makePattern';
 import type { Token } from 'akore';
 
 export default class Log extends Instruction {
-    patterns = makePattern('$log', true);
+    patterns = makePattern(/\$(printf?|(console\.)?log)/, true);
     description = 'Logs content into the console.';
     fields = [
         {
@@ -22,7 +22,7 @@ export default class Log extends Instruction {
         return new CallNode({
             callee: new LiteralNode('console.log'),
             parameters: [
-                new LiteralNode(token.inside || '')
+                this.transpiler.string(token.inside ?? '')
             ],
             zero: false
         })
