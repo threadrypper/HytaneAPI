@@ -9,7 +9,7 @@ export class Transpiler extends BaseTranspiler {
      * @param source - Input string to be transpiled.
      * @returns {string} - The transpiled code.
      */
-    override transpile(source: string): string {
+    transpile(source: string): string {
         return source;
     }
 }

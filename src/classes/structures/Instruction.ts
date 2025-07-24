@@ -45,6 +45,53 @@ export enum DataType {
 }
 
 /**
+ * The base structure of an instruction field.
+ */
+export interface AbstractInstructionField {
+    /**
+     * The name of the field.
+     */
+    name: string
+    /**
+     * A brief description about what this field does.
+     */
+    description: string
+    /**
+     * The type of this field.
+     */
+    type: DataType
+    /**
+     * Whether is optional.
+     */
+    optional: boolean
+    /**
+     * Whether is spread field.
+     */
+    spread: boolean
+}
+
+/**
  * Represents a base instruction structure.
  */
-export abstract class Instruction extends BaseCompetence<Transpiler> {}
+export abstract class Instruction<Scoped extends boolean = boolean> extends BaseCompetence<Transpiler> {
+    /**
+     * A brief description about what this instruction does.
+     */
+    abstract description: string
+    /**
+     * The fields this instruction takes.
+     */
+    abstract fields?: AbstractInstructionField[]
+    /**
+     * The output type of the instruction.
+     */
+    abstract output: DataType
+    /**
+     * Whether this instruction is scoped.
+     */
+    abstract scoped: Scoped
+    /**
+     * The parent identifier of this scoped instruction.
+     */
+    abstract parentId?: Scoped extends false ? never : string
+}
