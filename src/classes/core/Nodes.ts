@@ -6,7 +6,8 @@ import { Node } from 'akore';
 export enum NodeType {
     Call = 'call_node',
     Literal = 'literal_node',
-    Program = 'program_node'
+    Program = 'program_node',
+    Sequence = 'sequence_node'
 }
 
 /**
@@ -54,7 +55,7 @@ export type CallNodeValue = {
     /**
      * The parameters of the node.
      */
-    parameters: null | BaseNode[]
+    parameters: SequenceNode
     /**
      * Whether use zero call syntax.
      */
@@ -79,10 +80,60 @@ export class CallNode extends BaseNode<NodeType.Call, CallNodeValue> {
      * @returns {string}
      */
     override serialize(): string {
-        const args = this.value.parameters === null ? '' : this.value.parameters.map((node) => node.serialize()).join(', ');
+        const args = this.value.parameters === null ? '' : this.value.parameters.serialize();
         const callee = this.value.callee.serialize();
 
         return (this.value.zero ? `(0, ${callee})(${args})` : `${callee}(${args})`) + (this.semicolon ? ';' : '');
+    }
+}
+
+/**
+ * The value of a sequence node.
+ */
+interface SequenceNodeValue {
+    /**
+     * The nodes to include in the sequence.
+     */
+    elements: BaseNode[]
+    /**
+     * Operator to join the nodes.
+     */
+    operator: string
+}
+
+/**
+ * A sequence in the AST.
+ */
+export class SequenceNode extends BaseNode<NodeType.Sequence, SequenceNodeValue> {
+    /**
+     * Creates a sequence in the AST.
+     * @param value - The value of the sequence node.
+     * @param semicolon - Whether attach a semicolon to it.
+     */
+    constructor(value: SequenceNodeValue, semicolon?: boolean) {
+        super(NodeType.Sequence, value, semicolon)
+    }
+
+    /**
+     * The string representation of the sequence.
+     * @returns {string}
+     */
+    override serialize(): string {
+        return `${this.elements.map((node) => node.serialize()).join(this.operator)}${this.semicolon ? ';' : ''}`;
+    }
+
+    /**
+     * The elements of the sequence.
+     */
+    get elements(): BaseNode[] {
+        return this.value.elements
+    }
+
+    /**
+     * The operator to join the elements.
+     */
+    get operator(): string {
+        return this.value.operator
     }
 }
 
